@@ -39,6 +39,13 @@ def mouse_click(name, button="left", filepath="loc.json"):
 def wait(seconds):
   time.sleep(seconds)
 
+def place_troop(char, count=1):
+  keyboard.press_and_release(char)
+  wait(0.5)
+  for i in range(count):
+    pyautogui.click(button='left')
+  wait(0.5)
+
 def find_attack():
   wait(1)
   mouse_click("attack")
@@ -49,22 +56,19 @@ def find_attack():
     if (screen('cloud') < 60):
       break
 
-
-def deploy(filepath="loc.json"):
+def deploy_all(filepath="loc.json"):
   wait(2)
   locs = load_locations(filepath)
   x, y = locs["troop"]["x"], locs["troop"]["y"]
   pyautogui.moveTo(x, y)
   wait(0.2)
-  pyautogui.mouseDown(x, y)
   wait(0.2)
-  keyboard.press('1')
-  wait(2)
-  for key in ["Z", "Q", "W", "E", "R"]:
-    keyboard.press(key)
-    time.sleep(0.5)
-  pyautogui.mouseUp(x, y)
-  keyboard.press('A')
+  place_troop('1', 7) # super dragon
+  place_troop('2', 2) # broom witch
+  for key in ["Z", "Q", "W", "E", "R"]: # heros
+    place_troop(key)
+  wait(0.2)
+  keyboard.press_and_release('A')
   wait(0.2)
   for i in range(1, 5):
     px, py = locs['spell' + str(i)]["x"], locs['spell' + str(i)]["y"]
@@ -72,22 +76,45 @@ def deploy(filepath="loc.json"):
       pyautogui.click(px, py)
       time.sleep(0.2)
 
-def exit():
-  while True:
-    wait(5)
-    if (screen('return') > 60):
-      break
-  keyboard.press('esc')
-  wait(7)
+def deploy_one(filepath="loc.json"):
+  wait(2)
+  keyboard.press_and_release('A')
+  wait(0.2)
+  locs = load_locations(filepath)
+  px, py = locs['spell1']["x"], locs['spell1']["y"]
+  pyautogui.click(px, py)
+  wait(1)
+
+def exit(instant = None):
+  if (instant):
+    mouse_click('surrender')
+    wait(0.5)
+    mouse_click('confirm')
+  else:
+    while True:
+      wait(4)
+      if (screen('return') > 60):
+        break
+  wait(0.5)
+  mouse_click("return")
+  wait(4)
   
 def perform_attacks(n):
   for _ in range(n):
     find_attack()
     notify_sound()
-    deploy()
+    deploy_all()
     exit()
     notify_sound()
-  
+
+def lose_trophies(n):
+  for _ in range(n):
+    find_attack()
+    deploy_one()
+    exit(instant=True)
+     
 
 if __name__ == "__main__":
-  perform_attacks(2)
+  lose_trophies(30)
+  
+  # perform_attacks(100)

@@ -87,6 +87,14 @@ def run_for_seconds(template_name, duration=7, interval=1):
 
 # run_for_seconds("cloud", duration=7, interval=0.5)
 
-from img import compare
+# from main import place_troop
+import mouse
+import keyboard
+def place_troop(char, count=1):
+  keyboard.press(char)
+  time.sleep(1)
+  for i in range(count):
+    mouse.click('left')
+    time.sleep(0.5)
 time.sleep(1)
-print(compare('image', 'return'))
+place_troop('2', 1)
